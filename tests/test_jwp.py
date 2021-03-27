@@ -1,9 +1,13 @@
+import sys, os
+myPath = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, myPath + '/../')
+
 import pytest
 import random
 import time
 from json_work_proof import JWP
 
-class JWPTests:
+class TestJWP:
     
     def test_single(self):
         start = time.time()
@@ -20,8 +24,8 @@ class JWPTests:
 
             decodedClaims = jwp.decode(stamp)
 
-            self.assertEqual(claims['hello'], decodedClaims['hello'])
-            self.assertEqual(claims['randomInt'], decodedClaims['randomInt'])
+            assert claims['hello'] == decodedClaims['hello']
+            assert claims['randomInt'] == decodedClaims['randomInt']
     
 
     def test_generate_and_check(self):
@@ -35,12 +39,12 @@ class JWPTests:
 
     def test_zero_bit_count(self):
         jwp = JWP()
-        self.assertEqual(jwp._leading_zero_bit_count(0b1000_0000), 0)
-        self.assertEqual(jwp._leading_zero_bit_count(0b0100_0000), 1)
-        self.assertEqual(jwp._leading_zero_bit_count(0b0010_0000), 2)
-        self.assertEqual(jwp._leading_zero_bit_count(0b0001_0000), 3)
-        self.assertEqual(jwp._leading_zero_bit_count(0b0000_1000), 4)
-        self.assertEqual(jwp._leading_zero_bit_count(0b0000_0100), 5)
-        self.assertEqual(jwp._leading_zero_bit_count(0b0000_0010), 6)
-        self.assertEqual(jwp._leading_zero_bit_count(0b0000_0001), 7)
-        self.assertEqual(jwp._leading_zero_bit_count(0), 8)
+        assert jwp._leading_zero_bit_count(0b1000_0000) == 0
+        assert jwp._leading_zero_bit_count(0b0100_0000) == 1
+        assert jwp._leading_zero_bit_count(0b0010_0000) == 2
+        assert jwp._leading_zero_bit_count(0b0001_0000) == 3
+        assert jwp._leading_zero_bit_count(0b0000_1000) == 4
+        assert jwp._leading_zero_bit_count(0b0000_0100) == 5
+        assert jwp._leading_zero_bit_count(0b0000_0010) == 6
+        assert jwp._leading_zero_bit_count(0b0000_0001) == 7
+        assert jwp._leading_zero_bit_count(0) == 8
