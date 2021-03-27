@@ -1,9 +1,9 @@
-import unittest
+import pytest
 import random
 import time
 from json_work_proof import JWP
 
-class JWPTests(unittest.TestCase):
+class JWPTests:
     
     def test_single(self):
         start = time.time()
@@ -24,7 +24,7 @@ class JWPTests(unittest.TestCase):
             self.assertEqual(claims['randomInt'], decodedClaims['randomInt'])
     
 
-    def dtest_generate_and_check(self):
+    def test_generate_and_check(self):
         self.generate_and_check(JWP(), count=5)
         self.generate_and_check(JWP(difficulty=22), count=2)
         self.generate_and_check(JWP(difficulty=18), count=5)
@@ -33,7 +33,7 @@ class JWPTests(unittest.TestCase):
         self.generate_and_check(JWP(difficulty=15, salt_length=100), count=5)
     
 
-    def dtest_zero_bit_count(self):
+    def test_zero_bit_count(self):
         jwp = JWP()
         self.assertEqual(jwp._leading_zero_bit_count(0b1000_0000), 0)
         self.assertEqual(jwp._leading_zero_bit_count(0b0100_0000), 1)
