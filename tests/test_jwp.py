@@ -44,7 +44,3 @@ class JWPTests:
         self.assertEqual(jwp._leading_zero_bit_count(0b0000_0010), 6)
         self.assertEqual(jwp._leading_zero_bit_count(0b0000_0001), 7)
         self.assertEqual(jwp._leading_zero_bit_count(0), 8)
-
-
-if __name__ == '__main__':
-    unittest.main()
