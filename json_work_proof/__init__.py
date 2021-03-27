@@ -58,7 +58,38 @@ class JWP():
     # - Decode
 
     def decode(self, stamp: str, verify: bool = True) -> dict:
-        return {}
+
+        components = stamp.split('.')
+        if len(components) != 3: raise DecodeError.InvalidFormat
+
+        encoded_header = components[0]
+        encoded_body = components[1]
+
+        header_data = base64url_decode(encoded_header)
+        body_data = base64url_decode(encoded_body)
+
+        header = json.loads(header_data)
+        body = json.loads(body_data)
+
+        if not verify: return body
+
+        # TODO: check algorithm in header
+
+        # - check proof
+
+        hasher = hashlib.sha256()
+        hasher.update(stamp.encode('utf-8'))
+        digest = hasher.digest()
+
+        if not self._is_zero_prefixed(digest, bit_count=self.difficulty):
+            raise DecodeError.InvalidProof
+
+        # - check expiration range
+
+
+
+
+        return body
     
 
 
@@ -86,3 +117,11 @@ class JWP():
 
     def _generate_salt(self):
         return os.urandom(self.salt_length)
+    
+
+    # - Exceptions
+
+    class DecodeError:
+        class InvalidFormat(Exception): pass
+        class InvalidProof(Exception): pass
+        class Expired(Exception): pass

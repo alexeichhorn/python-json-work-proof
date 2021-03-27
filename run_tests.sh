@@ -1,1 +1,0 @@
-python -m unittest tests/jwp_tests.py
