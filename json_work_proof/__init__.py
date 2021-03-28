@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from json_work_proof.base64url import *
 from json_work_proof.json_encoder import DefaultJSONEncoder
+from json_work_proof.classproperty import *
 from typing import Optional
 import hashlib
 import logging
@@ -33,10 +34,9 @@ class JWP():
 
         @classmethod
         def from_now(cls, duration: timedelta):
-            return cls.start_until(datetime.now(), duration)
+            return cls.start_until(datetime.utcnow(), duration)
         
-        @classmethod
-        @property
+        @classproperty
         def unlimited(cls):
             return cls(None, None)
         
@@ -124,8 +124,13 @@ class JWP():
 
         # - check expiration range
 
+        expiration = body.get('exp', datetime.fromtimestamp(0))
+        if isinstance(expiration, float) or isinstance(expiration, int): expiration = datetime.fromtimestamp(expiration)
 
-
+        if not expiration_range.contains(expiration):
+            print(expiration_range.start, expiration_range.end)
+            print(expiration)
+            raise JWP.DecodeError.Expired
 
         return body
     
