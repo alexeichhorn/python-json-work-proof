@@ -2,19 +2,27 @@
 
 ## Usage
 
+### General
+
+To generate and validate tokens you need to use a `JWP`-object. On creation you can specify the `difficulty`, which determines how hard the challenge should be. It defaults to `20`, which takes about a second to compute on an average computer. Each increment by one, doubles the difficulty and therefore the time it takes to generate.
+```
+from json_work_proof import JWP
+
+jwp = JWP() # defaults to difficulty=20
+jwp_harder = JWP(difficulty=25)
+```
+
 ### Generation
 
 To generate a token, that proves you did work, create a `JWP`-object and call it with your dictionary of claims this:
 ```
-from json_work_proof import JWP
-
 jwp = JWP()
 token = jwp.generate({ 'hello': 'world', 'count': 88 })
 ```
 
 ### Validation
 
-To check if a token is valid for a certain difficulty and read the claims:
+To check if a token is valid for a certain difficulty and to read the claims:
 ```
 jwp = JWP()
 try:
