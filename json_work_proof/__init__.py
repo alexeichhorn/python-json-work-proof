@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from json_work_proof.base64url import *
 from json_work_proof.json_encoder import DefaultJSONEncoder
+from typing import Optional
 import hashlib
 import logging
 import json
@@ -11,6 +12,43 @@ class JWP():
     def __init__(self, difficulty: int = 20, salt_length: int = 16):
         self.difficulty = difficulty
         self.salt_length = salt_length
+    
+
+    # - 
+
+    class DateRange:
+        def __init__(self, start: Optional[datetime], end: Optional[datetime]):
+            self.start = start
+            self.end = end
+        
+        @classmethod
+        def start_until(cls, start: datetime, duration: timedelta):
+            if isinstance(duration, float) or isinstance(duration, int): duration = timedelta(seconds=duration)
+            return cls(start, start + duration)
+        
+        @classmethod
+        def duration_to(cls, duration: timedelta, end: datetime):
+            if isinstance(duration, float) or isinstance(duration, int): duration = timedelta(seconds=duration)
+            return cls(end - duration, end)
+
+        @classmethod
+        def from_now(cls, duration: timedelta):
+            return cls.start_until(datetime.now(), duration)
+        
+        @classmethod
+        @property
+        def unlimited(cls):
+            return cls(None, None)
+        
+        # - Checks
+
+        def contains(self, date: datetime):
+            if self.start != None and date < self.start:
+                return False
+            elif self.end != None and date > self.end:
+                return False
+            else:
+                return True
     
 
     # - Encode
@@ -57,10 +95,10 @@ class JWP():
 
     # - Decode
 
-    def decode(self, stamp: str, verify: bool = True) -> dict:
+    def decode(self, stamp: str, verify: bool = True, expiration_range: DateRange = DateRange.from_now(1800)) -> dict:
 
         components = stamp.split('.')
-        if len(components) != 3: raise DecodeError.InvalidFormat
+        if len(components) != 3: raise JWP.DecodeError.InvalidFormat
 
         encoded_header = components[0]
         encoded_body = components[1]
@@ -78,11 +116,11 @@ class JWP():
         # - check proof
 
         hasher = hashlib.sha256()
-        hasher.update(stamp.encode('utf-8'))
+        hasher.update(stamp.encode())
         digest = hasher.digest()
 
         if not self._is_zero_prefixed(digest, bit_count=self.difficulty):
-            raise DecodeError.InvalidProof
+            raise JWP.DecodeError.InvalidProof
 
         # - check expiration range
 
@@ -117,7 +155,7 @@ class JWP():
 
     def _generate_salt(self):
         return os.urandom(self.salt_length)
-    
+
 
     # - Exceptions
 

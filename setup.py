@@ -13,7 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/alexeichhorn/python-json-work-proof",
     install_requires=[
-        'cryptography>=2.9.0'
+        #'cryptography>=2.9.0'
     ],
     packages=setuptools.find_packages(),
     classifiers=[

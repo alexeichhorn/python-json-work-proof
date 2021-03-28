@@ -5,6 +5,7 @@ sys.path.insert(0, myPath + '/../')
 import pytest
 import random
 import time
+from datetime import datetime
 from json_work_proof import JWP
 
 class TestJWP:
@@ -35,7 +36,53 @@ class TestJWP:
         self.generate_and_check(JWP(difficulty=15), count=10)
         self.generate_and_check(JWP(difficulty=5), count=10)
         self.generate_and_check(JWP(difficulty=15, salt_length=100), count=5)
+
+
+    def test_expiration_check(self):
+        jwp = JWP(difficulty=20)
+
+        stamp1 = "eyJ0eXAiOiJKV1AiLCJhbGciOiJTSEEyNTYiLCJkaWYiOjIwfQ.eyJleHAiOjE2MTY4NTA1NzAuNjU1MTQ3MSwiaGVsbG8iOiJ3b3JsZCJ9.VE6YYxIQ46lPzxyNuRYAmAMkEM"
+        assert isinstance(jwp.decode(stamp1, expiration_range=JWP.DateRange.unlimited), dict)
+        assert isinstance(jwp.decode(stamp1, expiration_range=JWP.DateRange.start_until(datetime.fromtimestamp(1616850383), 5*60)), dict)
+        with pytest.raises(JWP.DecodeError.Expired):
+            jwp.decode(stamp1)
+        
+        stamp2 = "eyJ0eXAiOiJKV1AiLCJhbGciOiJTSEEyNTYiLCJkaWYiOjIwfQ.eyJoZWxsbyI6IndvcmxkIn0.LCYdFqTlHkox8chJLRoPpQB5wC"
+        assert isinstance(jwp.decode(stamp2, expiration_range=JWP.DateRange.unlimited))
+        with pytest.raises(JWP.DecodeError.Expired):
+            jwp.decode(stamp2)
+        with pytest.raises(JWP.DecodeError.Expired):
+            jwp.decode(stamp2, expiration_range=JWP.DateRange.duration_to(1_000_000, datetime.now()))
+        assert isinstance(jwp.decode(stamp2, expiration_range=JWP.DateRange(None, datetime.now())))
     
+
+    def test_difficulty_check(self):
+        hard_jwp = JWP(difficulty=20)
+        easy_jwp = JWP(difficulty=15)
+
+        hard_stamp = "eyJ0eXAiOiJKV1AiLCJhbGciOiJTSEEyNTYiLCJkaWYiOjIwfQ.eyJleHAiOjE2MTY4NTA1NzAuNjU1MTQ3MSwiaGVsbG8iOiJ3b3JsZCJ9.VE6YYxIQ46lPzxyNuRYAmAMkEM"
+        easy_stamp = "eyJ0eXAiOiJKV1AiLCJhbGciOiJTSEEyNTYiLCJkaWYiOjE1fQ.eyJoZWxsbyI6IndvcmxkIiwiZXhwIjoxNjE2ODUxODcyLjUyOTQwNDJ9.Rg1tRi9JUkw1Ls9WotkuaAFzs"
+
+        assert isinstance(hard_jwp.decode(hard_stamp, expiration_range=JWP.DateRange.unlimited), dict)
+        with pytest.raises(JWP.DecodeError.InvalidProof):
+            hard_jwp.decode(easy_stamp, expiration_range=JWP.DateRange.unlimited)
+        
+        assert isinstance(easy_jwp.decode(hard_stamp, expiration_range=JWP.DateRange.unlimited), dict)
+        assert isinstance(easy_jwp.decode(easy_stamp, expiration_range=JWP.DateRange.unlimited), dict)
+    
+
+    def test_invalid_proof_check(self):
+        jwp = JWP(difficulty=20)
+
+        valid_stamp = "eyJ0eXAiOiJKV1AiLCJhbGciOiJTSEEyNTYiLCJkaWYiOjIwfQ.eyJleHAiOjE2MTY4NTA1NzAuNjU1MTQ3MSwiaGVsbG8iOiJ3b3JsZCJ9.VE6YYxIQ46lPzxyNuRYAmAMkEM"
+        assert isinstance(jwp.decode(valid_stamp, expiration_range=JWP.DateRange.unlimited))
+
+        invalid_stamp = "eyJ0eXAiOiJKV1AiLCJhbGciOiJTSEEyNTYiLCJkaWYiOjIwfQ.eyJleHAiOjE2MTY4NTA1NzAuNjU1MTQ3MSwiaGVsbG8iOiJ3b3JsZCJ9.VE6YYxIQ46lPzxyNuRYAmAMkEC"
+        assert isinstance(jwp.decode(invalid_stamp, verify=False), dict)
+        with pytest.raises(JWP.DecodeError.InvalidProof):
+            jwp.decode(invalid_stamp, expiration_range=JWP.DateRange.unlimited)
+    
+
 
     def test_zero_bit_count(self):
         jwp = JWP()
