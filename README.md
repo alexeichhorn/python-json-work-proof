@@ -10,6 +10,10 @@ A token looks like this: `eyJ0eXAiOiJKV1AiLCJhbGciOiJTSEEyNTYiLCJkaWYiOjIwfQ.eyJ
 It contains three elements which are each base64url encoded. The header contains the type of the token (JWP), the hash algorithm used for the challenge (currently only SHA256 supported) and the difficulty at which the token was mined. The payload consists of the claims you specified and optionally an expiration date. The last part contains a salt and a big number (named counter in Hashcash). The work needed to generate a token is actually to find this number. It's hard to find this number, but easy to verify it's correct. (Read more about how it works on [Wikipedia](https://en.wikipedia.org/wiki/Hashcash))
 
 
+## Possible Applications
+
+Can be used to prevent DDOS attacks or as an alternative to rate limiting. E.g. you can use this to prevent brute forcing user logins.
+
 
 ## Usage
 
