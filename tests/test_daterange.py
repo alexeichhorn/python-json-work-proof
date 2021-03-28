@@ -27,3 +27,17 @@ class TestDateRange:
         assert dr1.end == calculated_end
         assert dr2.start == start
         assert dr2.end == calculated_end
+    
+    
+    def test_contains(self):
+        dr = JWP.DateRange(datetime.fromtimestamp(100), datetime.fromtimestamp(200))
+
+        assert dr.contains(datetime.fromtimestamp(100))
+        assert dr.contains(datetime.fromtimestamp(101))
+        assert dr.contains(datetime.fromtimestamp(200))
+        assert dr.contains(datetime.fromtimestamp(199))
+        assert dr.contains(datetime.fromtimestamp(150))
+        assert not dr.contains(datetime.fromtimestamp(99))
+        assert not dr.contains(datetime.fromtimestamp(0))
+        assert not dr.contains(datetime.fromtimestamp(201))
+        assert not dr.contains(datetime.utcnow())
