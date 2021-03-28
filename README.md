@@ -1,5 +1,14 @@
 # JSON Work Proof
 
+JSON Work Proof is a proof-of-work algorithm that creates a token after doing some workload. This token contains certain claims defined by you and verifies that you did this work at this time and for this claims.
+
+It packs the security of the Hashcash algorithm *(used for Bitcoin in a similar way)* into a modern JWT-like token.
+
+## Structure of Token
+
+
+
+
 ## Usage
 
 ### General
