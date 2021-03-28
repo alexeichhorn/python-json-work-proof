@@ -128,8 +128,6 @@ class JWP():
         if isinstance(expiration, float) or isinstance(expiration, int): expiration = datetime.fromtimestamp(expiration)
 
         if not expiration_range.contains(expiration):
-            print(expiration_range.start, expiration_range.end)
-            print(expiration)
             raise JWP.DecodeError.Expired
 
         return body
