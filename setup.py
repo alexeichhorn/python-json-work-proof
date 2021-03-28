@@ -5,7 +5,7 @@ with open("README.md", 'r') as f:
 
 setuptools.setup(
     name="json-work-proof",
-    version="0.1",
+    version="0.1.1",
     author="Alexander Eichhorn",
     author_email="",
     description="JSON Work Proof (JWP) - proof-of-work algorithm",
