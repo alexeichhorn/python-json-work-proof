@@ -34,7 +34,7 @@ class JWP():
 
         @classmethod
         def from_now(cls, duration: timedelta):
-            return cls.start_until(datetime.utcnow(), duration)
+            return cls.start_until(datetime.now(), duration)
         
         @classproperty
         def unlimited(cls):
@@ -53,7 +53,7 @@ class JWP():
 
     # - Encode
 
-    def generate(self, claims: dict, expiration: datetime = datetime.utcnow() + timedelta(seconds=5*60)) -> str:
+    def generate(self, claims: dict, expiration: datetime = datetime.now() + timedelta(seconds=5*60)) -> str:
 
         header = { 'typ': 'JWP', 'alg': 'SHA256', 'dif':  self.difficulty }
 
