@@ -14,11 +14,18 @@ jwp_harder = JWP(difficulty=25)
 
 ### Generation
 
-To generate a token, that proves you did work, create a `JWP`-object and call it with your dictionary of claims this:
+To generate a token, that proves you did work, create a `JWP`-object and call it with your dictionary of claims like this:
 ```
 jwp = JWP()
 token = jwp.generate({ 'hello': 'world', 'count': 88 })
 ```
+
+*Note:* A token expires 5 minutes after creation on default. You can change this by giving a custom expiration date:
+```
+expiration = datetime.utcnow() + timedelta(hours=1) # 1 hour from now
+token = jwp.generate(claims, expiration=expiration)
+```
+
 
 ### Validation
 
