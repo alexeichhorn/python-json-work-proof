@@ -95,7 +95,12 @@ class JWP():
 
     # - Decode
 
-    def decode(self, stamp: str, verify: bool = True, expiration_range: DateRange = DateRange.from_now(1800)) -> dict:
+    def decode(self, stamp: str, verify: bool = True, expiration_range: DateRange = None) -> dict:
+        '''
+        :param expiration_range: defaults to a range from now to 30 minutes from now
+        '''
+
+        if expiration_range == None: expiration_range = JWP.DateRange.from_now(1800)
 
         components = stamp.split('.')
         if len(components) != 3: raise JWP.DecodeError.InvalidFormat
